@@ -8,7 +8,7 @@ This repo is the official implementation of "Gloss-free Sign Language Translatio
 
 > **Visual-Language Pre-training in SLT Tasks.**: Included in this repo.
 
-<img src="./demo/slt_method.jpg" alt="" style="zoom: 60%;" />
+<img src="./demo/slt_approach.gif" alt="" style="zoom: 60%;" />
 
 ## Installation
 
