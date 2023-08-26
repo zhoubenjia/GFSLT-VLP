@@ -5,4 +5,4 @@ out/
 core*
 *.ipynb
 *.sh
-pretrain_models
+*.bin

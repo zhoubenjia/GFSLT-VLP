@@ -24,6 +24,9 @@ pip install -r requirements.txt
 ## Getting Started
 <img src="./demo/pipeline.jpg" alt="" style="zoom: 60%;" />
 
+### Preparation
+Please refer to [pretrain_models](pretrain_models/README.md) to prepare MBart weight file and GFSLT model.
+
 ### VLP Pretrain
 
 If the goal is to solely pre-train the Visual Encoder, the optimal approach would involve employing the fundamental visual-language alignment strategy. This method stands out as a straightforward and highly efficient means of SLT pre-training.
