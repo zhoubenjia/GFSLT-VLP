@@ -13,7 +13,7 @@ This repo is the official implementation of "Gloss-free Sign Language Translatio
 ## Installation
 
 ```bash
-conda create -n gfslt python=3.8 anaconda
+conda create -n gfslt python==3.8
 conda activate gfslt
 
 # Please install PyTorch according to your CUDA version.
