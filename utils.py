@@ -29,7 +29,10 @@ from einops import rearrange, repeat
 import pickle
 import gzip
 
-from torchtext.vocab import build_vocab_from_iterator
+try:
+    from torchtext.vocab import build_vocab_from_iterator
+except:
+    pass
 from itertools import groupby
 import tensorflow as tf
 
