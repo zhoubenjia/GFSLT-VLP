@@ -38,8 +38,12 @@ from loguru import logger
 
 # *metric
 from metrics import wer_list
-from nlgeval import compute_metrics
 from sacrebleu.metrics import BLEU, CHRF, TER
+try:
+    from nlgeval import compute_metrics
+except:
+    print('Please install nlgeval package.')
+
 
 # *timm
 from timm.optim import create_optimizer

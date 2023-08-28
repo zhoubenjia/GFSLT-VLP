@@ -38,7 +38,7 @@ python -m torch.distributed.launch --nproc_per_node=4 --master_port=1236 --use_e
 ### VLP Pretrain V2
 If the objective is to simultaneously pre-train both the visual encoder and text decoder, the recommended approach is to adopt the VLP-V2 version. This version employs a methodology that combines Contrastive Language-Image Pretraining (CLIP) with masked self-supervised learning, resulting in the creation of pre-tasks that effectively bridge the semantic gap between visual and textual representations while also restoring masked sentences. Consequently, this integrated method enables the achievement of joint pre-training for the visual encoder and text decoder.
 ```bash
-python -m torch.distributed.launch --nproc_per_node=4 --master_port=1236 --use_env train_vlp_v2.py --batch-size 4 --epochs 80 --opt sgd --lr 0.01 --output_dir out/vlp_v2 --training-refurbish --noise-rate 0.15 --noise-type omit_last --random-shuffle False  
+python -m torch.distributed.launch --nproc_per_node=4 --master_port=1236 --use_env train_vlp_v2.py --batch-size 4 --epochs 80 --opt sgd --lr 0.01 --output_dir out/vlp_v2 --training-refurbish True --noise-rate 0.15 --noise-type omit_last --random-shuffle False  
 ```
 
 ### GFSLT-VLP

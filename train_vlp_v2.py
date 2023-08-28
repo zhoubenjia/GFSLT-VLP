@@ -152,9 +152,9 @@ def get_args_parser():
     parser.add_argument('--training-refurbish', default=True, type=bool)
     parser.add_argument('--noise-rate', default=0.15, type=float)
     parser.add_argument('--noise-type', default='omit_last', type=str, choices=['omit', 'omit_last'])
-    parser.add_argument('--random-shuffle', action='store_true')
+    parser.add_argument('--random-shuffle', default=False, type=bool)
 
-    parser.add_argument('--loss-lambda', type=float, default=0.1, metavar='RATE',
+    parser.add_argument('--loss-lambda', type=float, default=1.0, metavar='RATE',
                         help='lambda param')
 
     return parser
@@ -355,7 +355,7 @@ def train_one_epoch(args, model: torch.nn.Module, criterion: nn.CrossEntropyLoss
             TD_train_dict['optimizer'].zero_grad()
             with torch.cuda.amp.autocast():
                 lm_logits = TD_train_dict['text_decoder'](tgt_input, masked_tgt_input, model.module.model_txt)
-                masked_lm_loss = loss_fct(lm_logits.view(-1, lm_logits.shape[-1]), tgt_input['input_ids'].cuda().view(-1))
+                masked_lm_loss = loss_fct(lm_logits.view(-1, lm_logits.shape[-1]), tgt_input['input_ids'].cuda().view(-1)) * args.loss_lambda
             loss_scaler(masked_lm_loss, TD_train_dict['optimizer'])
 
         loss_value = total_loss.item()
