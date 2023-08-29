@@ -1,7 +1,8 @@
 # [[ICCV'23](https://arxiv.org/pdf/2307.14768.pdf)] Gloss-free Sign Language Translation: Improving from Visual-Language Pretraining
 
-<a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>  [![report](https://img.shields.io/badge/ArXiv-Paper-red)](https://arxiv.org/pdf/2307.14768.pdf)
+<a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>  [![report](https://img.shields.io/badge/ArXiv-Paper-red)](https://arxiv.org/abs/2307.14768)
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/gloss-free-sign-language-translation/gloss-free-sign-language-translation-on)](https://paperswithcode.com/sota/gloss-free-sign-language-translation-on?p=gloss-free-sign-language-translation)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/gloss-free-sign-language-translation/gloss-free-sign-language-translation-on-csl)](https://paperswithcode.com/sota/gloss-free-sign-language-translation-on-csl?p=gloss-free-sign-language-translation)
 
 
