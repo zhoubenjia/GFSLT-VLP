@@ -2,6 +2,9 @@
 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>  [![report](https://img.shields.io/badge/ArXiv-Paper-red)](https://arxiv.org/pdf/2307.14768.pdf)
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/gloss-free-sign-language-translation/gloss-free-sign-language-translation-on-csl)](https://paperswithcode.com/sota/gloss-free-sign-language-translation-on-csl?p=gloss-free-sign-language-translation)
+
+
 This repo is the official implementation of "Gloss-free Sign Language Translation: Improving from Visual-Language Pretraining" as well as the follow-ups. It currently includes code and models for the following tasks:
 
 > **Gloss-free Sign Language Translation**: Included in this repo.
