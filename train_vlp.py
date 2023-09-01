@@ -408,7 +408,7 @@ def setup_run(args, config):
             run.define_metric("epoch")
             run.define_metric("training/*", step_metric="epoch")
             run.define_metric("dev/*", step_metric="epoch")
-            run.run.name = args.output_dir.split('/')[-1]
+            run.name = args.output_dir.split('/')[-1]
         else:
             os.environ["WANDB_MODE"] = 'disabled'
             run = False
