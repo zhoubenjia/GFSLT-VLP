@@ -82,7 +82,7 @@ def make_resnet(name='resnet18'):
 class resnet(nn.Module):
     def __init__(self):
         super(resnet, self).__init__()
-        self.resnet = make_resnet(name='resnet18')
+        self.resnet = make_resnet(name='resnet34')
 
     def forward(self, x, lengths):
         x = self.resnet(x)
