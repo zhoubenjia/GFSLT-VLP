@@ -248,7 +248,7 @@ def main(args, config):
 
     lr_scheduler = scheduler.CosineAnnealingLR(
                 optimizer=optimizer,
-                eta_min=config['training']['learning_rate_min'],
+                eta_min=1e-8,
                 T_max=args.epochs,
             )
     loss_scaler = NativeScaler()
@@ -385,7 +385,7 @@ def train_one_epoch(args, model: torch.nn.Module, criterion: nn.CrossEntropyLoss
 
         metric_logger.update(loss=loss_value)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
-        metric_logger.update(lr_mbert=round(float(optimizer.param_groups[1]["lr"]), 8))
+        metric_logger.update(lr_mbart=round(float(optimizer.param_groups[1]["lr"]), 8))
 
         if (step+1) % 10 == 0 and args.visualize and utils.is_main_process():
             utils.visualization(model.module.visualize())

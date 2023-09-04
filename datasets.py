@@ -106,19 +106,14 @@ class S2T_Dataset(Dataset.Dataset):
         length = sample['length']
         
         name_sample = sample['name']
-        sign_sample = sample['feature']
+        # sign_sample = sample['feature']
 
-        if len(sign_sample) > self.max_length:
-            sign_sample = sign_sample[0:self.max_length]
+        # if len(sign_sample) > self.max_length:
+        #     sign_sample = sign_sample[0:self.max_length]
 
-        if self.config['type'] == 'S2T':
-            img_sample = self.load_imgs([self.img_path + x for x in sample['imgs_path']])
-        elif self.config['type'] == 'F2T':
-            img_sample = torch.zeros(20,3,2,2)
-        else:
-            raise NameError('Currently, only S2T or F2T are supported.')
+        img_sample = self.load_imgs([self.img_path + x for x in sample['imgs_path']])
         
-        return name_sample,img_sample,sign_sample,tgt_sample
+        return name_sample,img_sample,tgt_sample
     
     def load_imgs(self, paths):
 
@@ -155,15 +150,13 @@ class S2T_Dataset(Dataset.Dataset):
 
     def collate_fn(self,batch):
         
-        sign_batch,tgt_batch,gloss_batch,img_tmp,src_length_batch,name_batch = [],[],[],[],[],[]
+        tgt_batch,img_tmp,src_length_batch,name_batch = [],[],[],[]
 
-        for name_sample, img_sample, sign_sample, tgt_sample in batch:
+        for name_sample, img_sample, tgt_sample in batch:
 
             name_batch.append(name_sample)
 
             img_tmp.append(img_sample)
-
-            sign_batch.append(sign_sample)
 
             tgt_batch.append(tgt_sample)
 
@@ -188,22 +181,22 @@ class S2T_Dataset(Dataset.Dataset):
         src_length_batch = torch.tensor(src_length_batch)
 
         
-        sign_length_batch = []
-        for i in range(len(sign_batch)):
-            sign_length_batch.append(len(sign_batch[i]))
-        sign_length_batch = torch.tensor(sign_length_batch)
-        sign_batch = pad_sequence(sign_batch,batch_first=True,padding_value=1)
-        # mask_gen = sign_batch[:,:,0]
-        # sign_padding_mask = (mask_gen != 1).long()
-        #new_sign_lengths = (((sign_length_batch-5+1) / 2)-5+1)/2
-        new_sign_lengths = sign_length_batch
-        new_sign_lengths = new_sign_lengths.long()
-        mask_gen = []
-        for i in new_sign_lengths:
-            tmp = torch.ones([i]) + 7
-            mask_gen.append(tmp)
-        mask_gen = pad_sequence(mask_gen, padding_value=PAD_IDX,batch_first=True)
-        sign_padding_mask = (mask_gen != PAD_IDX).long()
+        # sign_length_batch = []
+        # for i in range(len(sign_batch)):
+        #     sign_length_batch.append(len(sign_batch[i]))
+        # sign_length_batch = torch.tensor(sign_length_batch)
+        # sign_batch = pad_sequence(sign_batch,batch_first=True,padding_value=1)
+        # # mask_gen = sign_batch[:,:,0]
+        # # sign_padding_mask = (mask_gen != 1).long()
+        # #new_sign_lengths = (((sign_length_batch-5+1) / 2)-5+1)/2
+        # new_sign_lengths = sign_length_batch
+        # new_sign_lengths = new_sign_lengths.long()
+        # mask_gen = []
+        # for i in new_sign_lengths:
+        #     tmp = torch.ones([i]) + 7
+        #     mask_gen.append(tmp)
+        # mask_gen = pad_sequence(mask_gen, padding_value=PAD_IDX,batch_first=True)
+        # sign_padding_mask = (mask_gen != PAD_IDX).long()
         
         img_batch = torch.cat(img_tmp,0)
 
@@ -220,12 +213,12 @@ class S2T_Dataset(Dataset.Dataset):
             tgt_input = self.tokenizer(tgt_batch, return_tensors="pt",padding = True,  truncation=True)
 
         src_input = {}
-        if self.config['type'] == 'S2T':
-            src_input['input_ids'] = img_batch
-            src_input['attention_mask'] = img_padding_mask
-        if self.config['type'] == 'F2T':
-            src_input['feature_input_ids'] = sign_batch
-            src_input['feature_attention_mask'] = sign_padding_mask
+        # if self.config['type'] == 'S2T':
+        src_input['input_ids'] = img_batch
+        src_input['attention_mask'] = img_padding_mask
+        # if self.config['type'] == 'F2T':
+        #     src_input['feature_input_ids'] = sign_batch
+        #     src_input['feature_attention_mask'] = sign_padding_mask
 
         src_input['src_length_batch'] = src_length_batch
         src_input['new_src_length_batch'] = new_src_lengths

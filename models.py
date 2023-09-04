@@ -149,7 +149,7 @@ class ImageCLIP(nn.Module):
     def __init__(self, config, inplanes=1024, planes=1024, head_type='linear') :
         super(ImageCLIP, self).__init__()
         self.config = config
-        self.model = nn.Identity() if config['type'] == 'F2T' else FeatureExtracter() 
+        self.model =  FeatureExtracter() 
         
         self.trans_encoder = MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder']).get_encoder()
         self.cls_token = nn.Parameter(torch.randn(1, 1, inplanes))
@@ -157,12 +157,12 @@ class ImageCLIP(nn.Module):
         self.lm_head = make_head(inplanes, planes, head_type)
         
     def forward(self, src_input):
-        if self.config['type'] == 'F2T':
-            x = src_input['feature_input_ids'].cuda() # [b, n, c]
-            attention_mask = src_input['feature_attention_mask']
-        else:
-            x = self.model(src_input['input_ids'].cuda(), src_input['src_length_batch']) # [b, n, c]
-            attention_mask = src_input['attention_mask']
+        # if self.config['type'] == 'F2T':
+        #     x = src_input['feature_input_ids'].cuda() # [b, n, c]
+        #     attention_mask = src_input['feature_attention_mask']
+        # else:
+        x = self.model(src_input['input_ids'].cuda(), src_input['src_length_batch']) # [b, n, c]
+        attention_mask = src_input['attention_mask']
 
         B, N, C = x.shape
         cls_token = repeat(self.cls_token, '() n d -> b n d', b=B)
@@ -412,25 +412,22 @@ class gloss_free_model(nn.Module):
         self.config = config
         self.args = args
 
-        self.backbone = nn.Identity() if config['type'] == 'F2T' else FeatureExtracter()
+        # self.backbone = nn.Identity() if config['type'] == 'F2T' else FeatureExtracter()
+        self.backbone = FeatureExtracter()
         self.mbart = MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'])
         self.sign_emb = V_encoder(emb_size=embed_dim,feature_size=embed_dim, config = config)
         self.embed_scale = math.sqrt(embed_dim) if config['training']['scale_embedding'] else 1.0
-
-        if config['training']['freeze']:
-            for param in self.mbart.model.shared.parameters():
-                param.requires_grad = False
         
-        if config['training']['gloss_free']:
-            self.cls_token = nn.Parameter(torch.randn(1, 1, embed_dim))
+        # if config['training']['gloss_free']:
+        #     self.cls_token = nn.Parameter(torch.randn(1, 1, embed_dim))
     
     def share_forward(self, src_input):
-        if self.config['type'] == 'F2T':
-            frames_feature = src_input['feature_input_ids'].cuda()
-            attention_mask = src_input['feature_attention_mask']
-        else:
-            frames_feature = self.backbone(src_input['input_ids'].cuda(), src_input['src_length_batch'])
-            attention_mask = src_input['attention_mask']
+        # if self.config['type'] == 'F2T':
+        #     frames_feature = src_input['feature_input_ids'].cuda()
+        #     attention_mask = src_input['feature_attention_mask']
+        
+        frames_feature = self.backbone(src_input['input_ids'].cuda(), src_input['src_length_batch'])
+        attention_mask = src_input['attention_mask']
 
         inputs_embeds = self.sign_emb(frames_feature)
         inputs_embeds = self.embed_scale * inputs_embeds
