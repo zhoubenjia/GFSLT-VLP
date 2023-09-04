@@ -234,11 +234,11 @@ def main(args, config):
 
     if args.distributed:
         text_decoder = torch.nn.parallel.DistributedDataParallel(text_decoder, device_ids=[args.gpu], find_unused_parameters=True)
-    optimizer_td = AdamW(text_decoder.module.parameters(), lr=config['training']['vl_learning_rate'], weight_decay=config['training']['weight_decay'], betas=(0.9, 0.98))
+    optimizer_td = AdamW(text_decoder.module.parameters(), lr=1e-3, weight_decay=0, betas=(0.9, 0.98))
 
     lr_scheduler_td = scheduler.CosineAnnealingLR(
                 optimizer=optimizer_td,
-                eta_min=config['training']['learning_rate_min'],
+                eta_min=1e-8,
                 T_max=args.epochs,
             )
     TD_train_dict = dict(
