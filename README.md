@@ -53,6 +53,12 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
 --finetune ./out/vlp/checkpoint.pth 
 ```
 
+### Evaluation
+To obtain more accurate evaluation results and multiple metrics, including BLER-n, METEOR, ROUGE_L, and CIDEr, it is strongly recommended to perform a systematic evaluation with the following commands on a single GPU. 
+```bash
+CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port=1236 --use_env train_slt.py --batch-size 2 --epochs 200 --opt sgd --lr 0.01 --output_dir out/Gloss-Free --resume out/Gloss-Free/best_checkpoint.pth --eval 
+```
+However, to use these commands, you need to install the [nlgeval](https://github.com/Maluuba/nlg-eval) package, one can also refer to the [README.md](./metrics/README.md) for instructions on how to install it.
 
 ## Citation
 
