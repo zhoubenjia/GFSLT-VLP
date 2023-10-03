@@ -1,4 +1,4 @@
-# [[ICCV'23](https://arxiv.org/pdf/2307.14768.pdf)] Gloss-free Sign Language Translation: Improving from Visual-Language Pretraining
+# [[ICCV'23](https://openaccess.thecvf.com/content/ICCV2023/html/Zhou_Gloss-Free_Sign_Language_Translation_Improving_from_Visual-Language_Pretraining_ICCV_2023_paper.html)] Gloss-free Sign Language Translation: Improving from Visual-Language Pretraining
 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>  [![report](https://img.shields.io/badge/ArXiv-Paper-red)](https://arxiv.org/abs/2307.14768)
 
