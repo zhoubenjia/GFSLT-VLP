@@ -65,12 +65,13 @@ However, to use these commands, you need to install the [nlgeval](https://github
 If you find our work useful for your project, please consider citing the paper:
 
 ```bibtex
-@inproceedings{gfslt2023zhou,
-  title  = {Gloss-free Sign Language Translation: Improving from Visual-Language Pretraining}, 
-  author = {Zhou, Benjia and Chen, Zhigang and Clap{\'e}s, Albert and Wan, Jun and Liang, Yanyan and Escalera, Sergio and Lei, Zhen and Zhang, Du},
-  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-  month = {October},
-  year = {2023}
+@InProceedings{Zhou_2023_ICCV,
+    author    = {Zhou, Benjia and Chen, Zhigang and Clap\'es, Albert and Wan, Jun and Liang, Yanyan and Escalera, Sergio and Lei, Zhen and Zhang, Du},
+    title     = {Gloss-Free Sign Language Translation: Improving from Visual-Language Pretraining},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2023},
+    pages     = {20871-20881}
 }
 ```
 
