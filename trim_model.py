@@ -17,9 +17,9 @@ for key,value in raw_data.items():
     data.append(sentence)
     # data.append(gloss.lower())
 
-tokenizer = MBartTokenizer.from_pretrained("/mnt/data/chenzhigang/code/GFSLT/pretrain_models/mbart-large-cc25", src_lang="de_DE", tgt_lang="de_DE")
+tokenizer = MBartTokenizer.from_pretrained("facebook/mbart-large-cc25", src_lang="de_DE", tgt_lang="de_DE")
 
-model = MBartForConditionalGeneration.from_pretrained("/mnt/data/chenzhigang/code/GFSLT/pretrain_models/mbart-large-cc25")
+model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-cc25")
 configuration = model.config
 
 # trim tokenizer
@@ -35,15 +35,16 @@ mt.make_model()
 new_tokenizer = tt.trimmed_tokenizer
 new_model = mt.trimmed_model
 
-new_tokenizer.save_pretrained('pretrain_models/MBart_trimmed_1')
-new_model.save_pretrained('pretrain_models/MBart_trimmed_1')
+new_tokenizer.save_pretrained('pretrain_models/MBart_trimmed')
+new_model.save_pretrained('pretrain_models/MBart_trimmed')
 
 ## mytran_model
 configuration = MBartConfig.from_pretrained('pretrain_models/mytran/config.json')
 configuration.vocab_size = new_model.config.vocab_size
 mytran_model = MBartForConditionalGeneration._from_config(config=configuration)
+mytran_model.model.shared = new_model.model.shared
 
-mytran_model.save_pretrained('pretrain_models/mytran_1/')
+mytran_model.save_pretrained('pretrain_models/mytran/')
 
 
 
