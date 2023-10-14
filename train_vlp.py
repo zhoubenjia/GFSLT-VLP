@@ -238,10 +238,10 @@ def main(args, config):
     if args.eval:
         if not args.resume:
             logger.warning('Please specify the trained model: --resume /path/to/best_checkpoint.pth')
-        dev_stats = evaluate(args, dev_dataloader, model, model_without_ddp, criterion, config, args.start_epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device)
+        dev_stats = evaluate(args, dev_dataloader, model, criterion, args.start_epoch)
         print(f"Dev loss of the network on the {len(dev_dataloader)} test videos: {dev_stats['loss']:.3f}")
 
-        test_stats = evaluate(args, test_dataloader, model, model_without_ddp, criterion, config, args.start_epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device)
+        test_stats = evaluate(args, test_dataloader, model, criterion, args.start_epoch)
         print(f"Test loss of the network on the {len(test_dataloader)} test videos: {test_stats['loss']:.3f}")
         return
 
@@ -266,19 +266,19 @@ def main(args, config):
                     'epoch': epoch,
                 }, checkpoint_path)
 
-        test_stats = evaluate(args, dev_dataloader, model, model_without_ddp, criterion, config, epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device)
+        test_stats = evaluate(args, dev_dataloader, model, criterion, epoch)
 
         if min_loss > test_stats["loss"]:
             min_loss = test_stats["loss"]
             if args.output_dir:
-                checkpoint_paths = [output_dir / 'best_checkpoint.pth']
+                checkpoint_paths = [output_dir / f'best_checkpoint.pth']
                 for checkpoint_path in checkpoint_paths:
                     utils.save_on_master({
                         'model': model_without_ddp.state_dict(),
                         'optimizer': optimizer.state_dict(),
                         'lr_scheduler': lr_scheduler.state_dict(),
                         'epoch': epoch,
-                        'args': args,
+                        # 'args': args,
                     }, checkpoint_path)
         
         print(f"* DEV loss {test_stats['loss']:.3f} Min DEV loss {min_loss}")
@@ -296,15 +296,16 @@ def main(args, config):
                 f.write(json.dumps(log_stats) + "\n")
 
     # Last epoch
-    test_on_last_epoch = False
+    test_on_last_epoch = True
     if test_on_last_epoch and args.output_dir:
+        torch.distributed.barrier()
         checkpoint = torch.load(args.output_dir+'/best_checkpoint.pth', map_location='cpu')
         model_without_ddp.load_state_dict(checkpoint['model'], strict=True)
 
-        dev_stats = evaluate(args, dev_dataloader, model, model_without_ddp, criterion, config, epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device)
+        dev_stats = evaluate(args, dev_dataloader, model, criterion, epoch)
         print(f"Dev loss of the network on the {len(dev_dataloader)} test videos: {dev_stats['loss']:.3f}")
 
-        test_stats = evaluate(args, test_dataloader, model, model_without_ddp, criterion, config, epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device)
+        test_stats = evaluate(args, test_dataloader, model, criterion, epoch)
         print(f"Test loss of the network on the {len(test_dataloader)} test videos: {test_stats['loss']:.3f}")
 
     total_time = time.time() - start_time
@@ -355,7 +356,7 @@ def train_one_epoch(args, model: torch.nn.Module, criterion: nn.CrossEntropyLoss
 
     return  {k: meter.global_avg for k, meter in metric_logger.meters.items()}
 
-def evaluate(args, dev_dataloader, model, model_without_ddp, criterion, config, epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device):
+def evaluate(args, dev_dataloader, model, criterion, epoch):
     model.eval()
 
     metric_logger = utils.MetricLogger(delimiter="  ")

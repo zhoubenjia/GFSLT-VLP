@@ -6,3 +6,4 @@ core*
 *.ipynb
 *.sh
 *.bin
+wandb

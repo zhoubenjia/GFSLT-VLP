@@ -305,7 +305,7 @@ def main(args, config):
                         'lr_scheduler': lr_scheduler.state_dict(),
                         'text_decoder': TD_train_dict['text_decoder'].state_dict(),
                         'epoch': epoch,
-                        'args': args,
+                        # 'args': args,
                     }, checkpoint_path)
         
         print(f"* DEV loss {test_stats['loss']:.3f} Min DEV loss {min_loss}")
@@ -321,6 +321,19 @@ def main(args, config):
         if args.output_dir and utils.is_main_process():
             with (output_dir / "log.txt").open("a") as f:
                 f.write(json.dumps(log_stats) + "\n")
+        
+        # Last epoch
+    test_on_last_epoch = True
+    if test_on_last_epoch and args.output_dir:
+        torch.distributed.barrier()
+        checkpoint = torch.load(args.output_dir+'/best_checkpoint.pth', map_location='cpu')
+        model_without_ddp.load_state_dict(checkpoint['model'], strict=True)
+
+        dev_stats = evaluate(args, dev_dataloader, model, model_without_ddp, criterion, config, epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device, TD_train_dict)
+        print(f"Dev loss of the network on the {len(dev_dataloader)} test videos: {dev_stats['loss']:.3f}")
+
+        test_stats = evaluate(args, test_dataloader, model, model_without_ddp, criterion, config, epoch, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device, TD_train_dict)
+        print(f"Test loss of the network on the {len(test_dataloader)} test videos: {test_stats['loss']:.3f}")
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))

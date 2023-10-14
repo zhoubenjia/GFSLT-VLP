@@ -157,10 +157,7 @@ class ImageCLIP(nn.Module):
         self.lm_head = make_head(inplanes, planes, head_type)
         
     def forward(self, src_input):
-        # if self.config['type'] == 'F2T':
-        #     x = src_input['feature_input_ids'].cuda() # [b, n, c]
-        #     attention_mask = src_input['feature_attention_mask']
-        # else:
+       
         x = self.model(src_input['input_ids'].cuda(), src_input['src_length_batch']) # [b, n, c]
         attention_mask = src_input['attention_mask']
 
@@ -402,7 +399,6 @@ class V_encoder(nn.Module):
       
         src = self.src_emb(src)
         src = self.bn_ac(src.permute(0,2,1)).permute(0,2,1)
-        #src = self.bn_ac(src)
 
         return src
 
@@ -412,19 +408,12 @@ class gloss_free_model(nn.Module):
         self.config = config
         self.args = args
 
-        # self.backbone = nn.Identity() if config['type'] == 'F2T' else FeatureExtracter()
         self.backbone = FeatureExtracter()
         self.mbart = MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'])
         self.sign_emb = V_encoder(emb_size=embed_dim,feature_size=embed_dim, config = config)
         self.embed_scale = math.sqrt(embed_dim) if config['training']['scale_embedding'] else 1.0
         
-        # if config['training']['gloss_free']:
-        #     self.cls_token = nn.Parameter(torch.randn(1, 1, embed_dim))
-    
     def share_forward(self, src_input):
-        # if self.config['type'] == 'F2T':
-        #     frames_feature = src_input['feature_input_ids'].cuda()
-        #     attention_mask = src_input['feature_attention_mask']
         
         frames_feature = self.backbone(src_input['input_ids'].cuda(), src_input['src_length_batch'])
         attention_mask = src_input['attention_mask']
@@ -437,12 +426,6 @@ class gloss_free_model(nn.Module):
     def forward(self,src_input, tgt_input ):
         
         inputs_embeds, attention_mask = self.share_forward(src_input)
-        # if self.config['training']['gloss_free']:
-        #     # concat class token
-        #     B, N, C = frames_feature.shape
-        #     cls_token = repeat(self.cls_token, '() n d -> b n d', b=B)
-        #     inputs_embeds = torch.cat((cls_token, inputs_embeds), dim=1)
-        #     attention_mask = F.pad(src_input['feature_attention_mask'].flatten(1), (1, 0), value=1.)  # [b, 64] --> [b, 65]
 
         out = self.mbart(inputs_embeds = inputs_embeds,
                     attention_mask = attention_mask.cuda(),
@@ -457,13 +440,6 @@ class gloss_free_model(nn.Module):
 
     def generate(self,src_input,max_new_tokens,num_beams,decoder_start_token_id ):
         inputs_embeds, attention_mask = self.share_forward(src_input)
-
-        # if self.config['training']['gloss_free']:
-        #     # concat class token
-        #     B, N, C = frames_feature.shape
-        #     cls_token = repeat(self.cls_token, '() n d -> b n d', b=B)  
-        #     inputs_embeds = torch.cat((cls_token, inputs_embeds), dim=1)
-        #     attention_mask = F.pad(src_input['feature_attention_mask'].flatten(1), (1, 0), value=1.)  # [b, 64] --> [b, 65]
 
         out = self.mbart.generate(inputs_embeds = inputs_embeds,
                     attention_mask = attention_mask.cuda(),max_new_tokens=max_new_tokens,num_beams = num_beams,

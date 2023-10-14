@@ -9,5 +9,5 @@ training:
   wandb: disabled # online or disabled
   scale_embedding: False
 model:
-  transformer:  ./pretrain_models/MBart_trimmed
-  visual_encoder: ./pretrain_models/mytran
+  transformer:  ./pretrain_models/MBart_trimmed_1
+  visual_encoder: ./pretrain_models/mytran_1

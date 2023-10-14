@@ -1,0 +1,285 @@
+{
+  "added_tokens_decoder": {
+    "0": {
+      "content": "<s>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "1": {
+      "content": "<pad>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "2": {
+      "content": "</s>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "3": {
+      "content": "<unk>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "250001": {
+      "content": "ar_AR",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250002": {
+      "content": "cs_CZ",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250003": {
+      "content": "de_DE",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250004": {
+      "content": "en_XX",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250005": {
+      "content": "es_XX",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250006": {
+      "content": "et_EE",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250007": {
+      "content": "fi_FI",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250008": {
+      "content": "fr_XX",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250009": {
+      "content": "gu_IN",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250010": {
+      "content": "hi_IN",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250011": {
+      "content": "it_IT",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250012": {
+      "content": "ja_XX",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250013": {
+      "content": "kk_KZ",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250014": {
+      "content": "ko_KR",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250015": {
+      "content": "lt_LT",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250016": {
+      "content": "lv_LV",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250017": {
+      "content": "my_MM",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250018": {
+      "content": "ne_NP",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250019": {
+      "content": "nl_XX",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250020": {
+      "content": "ro_RO",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250021": {
+      "content": "ru_RU",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250022": {
+      "content": "si_LK",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250023": {
+      "content": "tr_TR",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250024": {
+      "content": "vi_VN",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250025": {
+      "content": "zh_CN",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": true,
+      "single_word": false,
+      "special": true
+    },
+    "250026": {
+      "content": "<mask>",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    }
+  },
+  "additional_special_tokens": [
+    "ar_AR",
+    "cs_CZ",
+    "de_DE",
+    "en_XX",
+    "es_XX",
+    "et_EE",
+    "fi_FI",
+    "fr_XX",
+    "gu_IN",
+    "hi_IN",
+    "it_IT",
+    "ja_XX",
+    "kk_KZ",
+    "ko_KR",
+    "lt_LT",
+    "lv_LV",
+    "my_MM",
+    "ne_NP",
+    "nl_XX",
+    "ro_RO",
+    "ru_RU",
+    "si_LK",
+    "tr_TR",
+    "vi_VN",
+    "zh_CN"
+  ],
+  "bos_token": "<s>",
+  "clean_up_tokenization_spaces": true,
+  "cls_token": "<s>",
+  "eos_token": "</s>",
+  "mask_token": "<mask>",
+  "model_max_length": 1024,
+  "pad_token": "<pad>",
+  "sep_token": "</s>",
+  "sp_model_kwargs": {},
+  "src_lang": "de_DE",
+  "tgt_lang": "de_DE",
+  "tokenizer_class": "MBartTokenizer",
+  "tokenizer_file": null,
+  "unk_token": "<unk>"
+}
