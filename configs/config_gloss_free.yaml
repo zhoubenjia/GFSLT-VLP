@@ -3,11 +3,11 @@ data:
   train_label_path: ./data/Phonexi-2014T/labels.train
   dev_label_path: ./data/Phonexi-2014T/labels.dev
   test_label_path: ./data/Phonexi-2014T/labels.test
-  img_path: /homedata/chenzhigang/datastet/PHOENIX-2014-T/features/fullFrame-210x260px/
+  img_path: /path/to/datastet/PHOENIX-2014-T/features/fullFrame-210x260px/
   max_length: 300
 training:
   wandb: disabled # online or disabled
   scale_embedding: False
 model:
-  transformer:  ./pretrain_models/MBart_trimmed_1
-  visual_encoder: ./pretrain_models/mytran_1
+  transformer:  ./pretrain_models/MBart_trimmed
+  visual_encoder: ./pretrain_models/mytran
