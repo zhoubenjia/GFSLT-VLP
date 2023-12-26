@@ -42,6 +42,9 @@ import numpy as np
 # global definition
 from definition import *
 
+from hpman.m import _
+from pathlib import Path
+
 
 class PositionalEncoding(nn.Module):
     def __init__(self,
@@ -402,6 +405,13 @@ class V_encoder(nn.Module):
 
         return src
 
+def config_decoder(config):
+    decoder_type = _('decoder_type', 'LD', choices=['LD', 'LLMD'])
+    if decoder_type == 'LD':
+        return MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'], ignore_mismatched_sizes = True, config = Path(config['model']['visual_encoder'])/'config.json')
+    elif decoder_type == 'LLMD':
+        return MBartForConditionalGeneration.from_pretrained(config['model']['transformer'], ignore_mismatched_sizes = True, config = Path(config['model']['transformer'])/'LLMD_config.json')
+    
 class gloss_free_model(nn.Module):
     def __init__(self, config, args, embed_dim=1024, pretrain=None):
         super(gloss_free_model, self).__init__()
@@ -409,9 +419,16 @@ class gloss_free_model(nn.Module):
         self.args = args
 
         self.backbone = FeatureExtracter()
-        self.mbart = MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'])
-        self.sign_emb = V_encoder(emb_size=embed_dim,feature_size=embed_dim, config = config)
-        self.embed_scale = math.sqrt(embed_dim) if config['training']['scale_embedding'] else 1.0
+        # self.mbart = MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'])
+        self.mbart = config_decoder(config)
+        
+ 
+        if config['model']['sign_proj']:
+            self.sign_emb = V_encoder(emb_size=embed_dim,feature_size=embed_dim, config = config)
+            self.embed_scale = math.sqrt(embed_dim) if config['training']['scale_embedding'] else 1.0
+        else:
+            self.sign_emb = nn.Identity()
+            self.embed_scale = 1.0
         
     def share_forward(self, src_input):
         

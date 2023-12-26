@@ -14,6 +14,12 @@ This repo is the official implementation of "Gloss-free Sign Language Translatio
 
 <img src="./demo/slt_approach.gif" alt="" style="zoom: 60%;" />
 
+## NEWS
+
+***2023/12/26***
+
+1. One can use the official 12-layer Mbart decoder for text decoding by setting ```--decoder-type LLMD```. However, it is important to note that this requires pre-training using ```train_vlp.py```.
+
 ## Installation
 
 ```bash

@@ -50,8 +50,10 @@ from timm.loss import SoftTargetCrossEntropy
 # visualization
 from torchvision.utils import save_image, make_grid
 from PIL import Image
-import cv2
 
+
+from hpman.m import _
+import hpargparse
 
 # global definition
 from definition import *
@@ -420,6 +422,8 @@ if __name__ == '__main__':
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     parser = argparse.ArgumentParser('Visual-Language-Pretraining (VLP) scripts', parents=[get_args_parser()])
+    _.parse_file(Path(__file__).resolve().parent)
+    hpargparse.bind(parser, _)
     args = parser.parse_args()
 
     with open(args.config, 'r+',encoding='utf-8') as f:
