@@ -7,3 +7,4 @@ core*
 *.sh
 *.bin
 wandb
+demo/
