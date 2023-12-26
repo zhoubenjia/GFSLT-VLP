@@ -36,6 +36,9 @@ from typing import Iterable, Optional
 import math, sys
 from loguru import logger
 
+from hpman.m import _
+import hpargparse
+
 # *metric
 from metrics import wer_list
 from sacrebleu.metrics import BLEU, CHRF, TER
@@ -230,7 +233,16 @@ def main(args, config):
                     if 'decoder' in k:
                         k = 'mbart.model.decoder.'+'.'.join(k.split('.')[2:])
                         new_state_dict[k] = v
-
+            
+        # *replace the word embedding
+        model_dict = torch.load(config['model']['transformer']+'/pytorch_model.bin', map_location='cpu')
+        for k, v in model_dict.items():
+            if 'decoder.embed_tokens.weight' in k:
+                k = 'mbart.' + k
+                new_state_dict[k] = v
+            if 'decoder.embed_positions.weight' in k:
+                k = 'mbart.' + k
+                new_state_dict[k] = v
 
         ret = model.load_state_dict(new_state_dict, strict=False)
         print('Missing keys: \n', '\n'.join(ret.missing_keys))
@@ -347,7 +359,6 @@ def main(args, config):
         
         test_stats = evaluate(args, test_dataloader, model, model_without_ddp, tokenizer, criterion, config, UNK_IDX, SPECIAL_SYMBOLS, PAD_IDX, device)
         print(f"BELU-4 of the network on the {len(test_dataloader)} test videos: {test_stats['belu4']:.2f}")
-        return
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
@@ -471,6 +482,8 @@ if __name__ == '__main__':
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     parser = argparse.ArgumentParser('Gloss-free Sign Language Translation script', parents=[get_args_parser()])
+    _.parse_file(Path(__file__).resolve().parent)
+    hpargparse.bind(parser, _)
     args = parser.parse_args()
 
     with open(args.config, 'r+',encoding='utf-8') as f:
