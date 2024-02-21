@@ -406,11 +406,14 @@ class V_encoder(nn.Module):
         return src
 
 def config_decoder(config):
+    from transformers import AutoConfig
+    
     decoder_type = _('decoder_type', 'LD', choices=['LD', 'LLMD'])
     if decoder_type == 'LD':
-        return MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'], ignore_mismatched_sizes = True, config = Path(config['model']['visual_encoder'])/'config.json')
+        
+        return MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'], ignore_mismatched_sizes = True, config = AutoConfig.from_pretrained(Path(config['model']['visual_encoder'])/'config.json'))
     elif decoder_type == 'LLMD':
-        return MBartForConditionalGeneration.from_pretrained(config['model']['transformer'], ignore_mismatched_sizes = True, config = Path(config['model']['transformer'])/'LLMD_config.json')
+        return MBartForConditionalGeneration.from_pretrained(config['model']['transformer'], ignore_mismatched_sizes = True, config = AutoConfig.from_pretrained(Path(config['model']['transformer'])/'LLMD_config.json'))
     
 class gloss_free_model(nn.Module):
     def __init__(self, config, args, embed_dim=1024, pretrain=None):
