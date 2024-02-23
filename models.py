@@ -232,10 +232,14 @@ class SLRCLIP(nn.Module):
         return logits_per_image, logits_per_text, ground_truth
 
 class FeatureExtracter(nn.Module):
-    def __init__(self):
+    def __init__(self, frozen=False):
         super(FeatureExtracter, self).__init__()
         self.conv_2d = resnet() # InceptionI3d()
         self.conv_1d = TemporalConv(input_size=512, hidden_size=1024, conv_type=2)
+
+        if frozen:
+            for param in self.conv_2d.parameters():
+                param.requires_grad = False
 
     def forward(self,
                 src: Tensor,
@@ -245,133 +249,6 @@ class FeatureExtracter(nn.Module):
         src = self.conv_1d(src)
 
         return src
-
-class Attention(nn.Module):
-    def __init__(self, dim, heads=16, dim_head=64, attn_drop=0.):
-        super().__init__()
-        inner_dim = dim_head * heads
-
-        self.heads = heads
-        self.scale = dim_head ** -0.5
-        self.to_qkv = nn.Linear(dim, inner_dim * 3, bias=False)
-        self.score = None
-    def forward(self, x, mask=None):
-        b, n, _, h = *x.shape, self.heads
-        qkv = self.to_qkv(x).chunk(3, dim=-1)
-        q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h=h), qkv)
-        dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
-
-        if mask is not None:
-            mask = F.pad(mask.flatten(1), (1, 0), value=1.)  # [b, 64] --> [b, 65]
-            mask = mask[:, None, None, :].float()
-            dots -= 10000.0 * (1.0 - mask)
-        attn = dots.softmax(dim=-1)
-        self.score = attn
-        out = einsum('b h i j, b h j d -> b h i d', attn, v)
-        out = rearrange(out, 'b h n d -> b n (h d)')
-        return out
-    def visualize(self):
-        return self.score
-        
-class FeedForward(nn.Module):
-    """FeedForward Neural Networks for each position"""
-    def __init__(self, dim, hidden_dim, dropout=0.):
-        super().__init__()
-        self.fc1 = nn.Linear(dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, dim)
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x):
-        # (B, S, D) -> (B, S, D_ff) -> (B, S, D)
-        return self.dropout(self.fc2(self.dropout(F.gelu(self.fc1(x)))))
-
-class PreNorm(nn.Module):
-    def __init__(self, dim, fn):
-        super().__init__()
-        self.norm = nn.LayerNorm(dim)
-        self.fn = fn
-
-    def forward(self, x, **kwargs):
-        return self.fn(self.norm(x), **kwargs)
-
-class CrossAttention(nn.Module):
-    def __init__(self, dim, heads=8, qkv_bias=False, qk_scale=None, attn_drop=0., proj_drop=0.):
-        super().__init__()
-        num_heads = heads
-        self.num_heads = num_heads
-        head_dim = dim // num_heads
-        # NOTE scale factor was wrong in my original version, can set manually to be compat with prev weights
-        self.scale = qk_scale or head_dim ** -0.5
-
-        self.wq = nn.Linear(dim, dim, bias=qkv_bias)
-        self.wk = nn.Linear(dim, dim, bias=qkv_bias)
-        self.wv = nn.Linear(dim, dim, bias=qkv_bias)
-        self.attn_drop = nn.Dropout(attn_drop)
-        # self.proj = nn.Linear(dim, dim)
-        # self.proj_drop = nn.Dropout(proj_drop)
-        self.score = None
-
-    def forward(self, x, mask=None):
-
-        B, N, C = x.shape
-        q = self.wq(x[:, 0:1, ...]).reshape(B, 1, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)  # B1C -> B1H(C/H) -> BH1(C/H)
-        k = self.wk(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)  # BNC -> BNH(C/H) -> BHN(C/H)
-        v = self.wv(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)  # BNC -> BNH(C/H) -> BHN(C/H)
-
-        attn = (q @ k.transpose(-2, -1)) * self.scale  # BH1(C/H) @ BH(C/H)N -> BH1N
-        if mask is not None:
-            mask = F.pad(mask.flatten(1), (1, 0), value=1.)  # [b, 64] --> [b, 65]
-            mask = mask[:, None, None, :].float()
-            attn -= 10000.0 * (1.0 - mask)
-        attn = attn.softmax(dim=-1)
-        attn = self.attn_drop(attn)
-        self.score = attn
-
-        x = (attn @ v).transpose(1, 2).reshape(B, 1, C)   # (BH1N @ BHN(C/H)) -> BH1(C/H) -> B1H(C/H) -> B1C
-        # x = self.proj(x)
-        # x = self.proj_drop(x)
-        return x
-    def visualize(self):
-        return self.score
-
-class Cross_att_layer(nn.Module):
-    def __init__(self, dim=1024, heads=16, depth=2, dropout=0.1, attn_drop=0.0,  mlp_dim=768):
-        super(Cross_att_layer, self).__init__()
-
-        self.layers = nn.ModuleList([])
-        for _ in range(depth):
-            self.layers.append(nn.ModuleList([
-                PreNorm(dim, Attention(dim, heads=heads, attn_drop=attn_drop)),
-                PreNorm(dim, FeedForward(dim, mlp_dim, dropout=dropout)),
-                PreNorm(dim, CrossAttention(dim, heads=heads, attn_drop=attn_drop)),
-                PreNorm(dim, FeedForward(dim, mlp_dim, dropout=dropout)),
-            ]))
-        self.cls_token_f = nn.Parameter(torch.randn(1, 1, dim))
-        self.cls_token_g = nn.Parameter(torch.randn(1, 1, dim))
-
-        # self.pos_embedding = nn.Parameter(torch.randn(1, num_patches + 1, inp_dim))
-
-    def forward(self, f, fmask, g, gmask):
-        B, N, C = f.shape
-        cls_token_f = repeat(self.cls_token_f, '() n d -> b n d', b=B)
-        f = torch.cat((cls_token_f, f), dim=1)
-        cls_token_g = repeat(self.cls_token_g, '() n d -> b n d', b=B)
-        g = torch.cat((cls_token_g, g), dim=1)
-        for attn1, ff1, c_attn, ff3 in self.layers:
-            f = attn1(f) + f
-            f = ff1(f) + f
-
-            g = attn1(g) + g
-            g = ff1(g) + g
-
-            f_g = c_attn(torch.cat((f[:, 0:1, :], g[:, 1:, :]), dim=1))
-            g_f = c_attn(torch.cat((g[:, 0:1, :], f[:, 1:, :]), dim=1))
-            f = torch.cat((g_f, f[:, 1:, :]), dim=1)
-            g = torch.cat((f_g, g[:, 1:, :]), dim=1)
-            f = ff3(f) + f
-            g = ff3(g) + g
-
-        return torch.cat((f[:, 0:1, :], g[:, 0:1, :]), dim=1)
 
 class V_encoder(nn.Module):
     def __init__(self,
@@ -421,10 +298,9 @@ class gloss_free_model(nn.Module):
         self.config = config
         self.args = args
 
-        self.backbone = FeatureExtracter()
+        self.backbone = FeatureExtracter(frozen=_('freeze_backbone', False))
         # self.mbart = MBartForConditionalGeneration.from_pretrained(config['model']['visual_encoder'])
         self.mbart = config_decoder(config)
-        
  
         if config['model']['sign_proj']:
             self.sign_emb = V_encoder(emb_size=embed_dim,feature_size=embed_dim, config = config)

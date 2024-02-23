@@ -175,7 +175,7 @@ def main(args, config):
     cudnn.benchmark = False
 
     print(f"Creating dataset:")
-    tokenizer = MBartTokenizer.from_pretrained(config['model']['transformer'])
+    tokenizer = MBartTokenizer.from_pretrained(config['model']['tokenizer'])
 
     train_data = S2T_Dataset(path=config['data']['train_label_path'], tokenizer = tokenizer, config=config, args=args, phase='train')
     print(train_data)
@@ -209,7 +209,7 @@ def main(args, config):
                                  pin_memory=args.pin_mem)
     
     print(f"Creating model:")
-    tokenizer = MBartTokenizer.from_pretrained(config['model']['transformer'], src_lang = 'de_DE', tgt_lang = 'de_DE')
+    tokenizer = MBartTokenizer.from_pretrained(config['model']['tokenizer'], src_lang = 'de_DE', tgt_lang = 'de_DE')
     model = gloss_free_model(config, args)
     model.to(device)
     print(model)
@@ -377,19 +377,16 @@ def train_one_epoch(args, model: torch.nn.Module, criterion: nn.CrossEntropyLoss
 
     for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
 
-        total_loss = 0.0
-
         out_logits, output = model(src_input, tgt_input)
         label = tgt_input['input_ids'].reshape(-1)
         logits = out_logits.reshape(-1,out_logits.shape[-1])
-        tgt_loss = criterion(logits, label.to(device, non_blocking=True))
-        total_loss += tgt_loss
+        loss = criterion(logits, label.to(device, non_blocking=True))
 
         optimizer.zero_grad()
-        total_loss.backward()
+        loss.backward()
         optimizer.step()
 
-        loss_value = total_loss.item()
+        loss_value = loss.item()
         if not math.isfinite(loss_value):
             print("Loss is {}, stopping training".format(loss_value))
             sys.exit(1)

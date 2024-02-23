@@ -175,7 +175,7 @@ def main(args, config):
     cudnn.benchmark = False
 
     print(f"Creating dataset:")
-    tokenizer = MBartTokenizer.from_pretrained(config['model']['transformer'])
+    tokenizer = MBartTokenizer.from_pretrained(config['model']['tokenizer'])
 
     train_data = S2T_Dataset(path=config['data']['train_label_path'], tokenizer = tokenizer, config=config, args=args, phase='train', training_refurbish=True)
     print(train_data)
@@ -235,7 +235,7 @@ def main(args, config):
     text_decoder = Text_Decoder(config).to(device)
 
     if args.distributed:
-        text_decoder = torch.nn.parallel.DistributedDataParallel(text_decoder, device_ids=[args.gpu], find_unused_parameters=True)
+        text_decoder = torch.nn.parallel.DistributedDataParallel(text_decoder, device_ids=[args.gpu], find_unused_parameters=False)
     optimizer_td = AdamW(text_decoder.module.parameters(), lr=1e-3, weight_decay=0, betas=(0.9, 0.98))
 
     lr_scheduler_td = scheduler.CosineAnnealingLR(

@@ -18,6 +18,7 @@ from vidaug import augmentors as va
 from augmentation import *
 
 from loguru import logger
+from hpman.m import _
 
 # global definition
 from definition import *
@@ -190,6 +191,7 @@ class S2T_Dataset(Dataset.Dataset):
         src_input = {}
         src_input['input_ids'] = img_batch
         src_input['attention_mask'] = img_padding_mask
+        src_input['name_batch'] = name_batch
 
         src_input['src_length_batch'] = src_length_batch
         src_input['new_src_length_batch'] = new_src_lengths

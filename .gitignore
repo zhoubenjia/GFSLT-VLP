@@ -8,3 +8,4 @@ core*
 *.bin
 wandb
 demo/
+backup

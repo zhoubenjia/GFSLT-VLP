@@ -166,7 +166,7 @@ def main(args, config):
     cudnn.benchmark = False # Since the input dim is dynamic.
 
     print(f"Creating dataset:")
-    tokenizer = MBartTokenizer.from_pretrained(config['model']['transformer'])
+    tokenizer = MBartTokenizer.from_pretrained(config['model']['tokenizer'])
 
     train_data = S2T_Dataset(path=config['data']['train_label_path'], tokenizer = tokenizer, config=config, args=args, phase='train')
     print(train_data)

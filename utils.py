@@ -579,3 +579,39 @@ class Dict(dict):
     __getattr__ = dict.__getitem__  # dict.k  ==>  dict[k]
     # __getattr__ = dict.get  # dict.k  ==>  dict.get(k)
     # __getattr__ = lambda d, k: d.get(k, '')  # dict.k  ==>  dict.get(k,default)
+
+def set_seed(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    # torch.backends.cudnn.enabled = False  
+
+def save_dataset_file(path, data):
+    with gzip.open(path, "w") as f:
+        pickle.dump(data,f)
+
+def param_groups_weight_decay(
+        model: torch.nn.Module,
+        weight_decay=1e-5,
+        no_weight_decay_list=()
+):
+    no_weight_decay_list = set(no_weight_decay_list)
+    decay = []
+    no_decay = []
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+
+        if param.ndim <= 1 or name.endswith(".bias") or name in no_weight_decay_list:
+            no_decay.append(param)
+        else:
+            decay.append(param)
+
+    return [
+        {'params': no_decay, 'weight_decay': 0.},
+        {'params': decay, 'weight_decay': weight_decay}]

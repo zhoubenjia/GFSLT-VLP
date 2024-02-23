@@ -9,6 +9,7 @@ training:
   wandb: disabled # online or disabled
   scale_embedding: False
 model:
-  transformer:  ./pretrain_models/MBart_trimmed
-  visual_encoder: ./pretrain_models/mytran
+  tokenizer: /homedata/bjzhou/codes/VLP/GFSLT-VLP/pretrain_models/MBart_trimmed
+  transformer:  /homedata/bjzhou/codes/VLP/GFSLT-VLP/pretrain_models/MBart_trimmed
+  visual_encoder: /homedata/bjzhou/codes/VLP/GFSLT-VLP/pretrain_models/mytran
   sign_proj: True
