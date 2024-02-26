@@ -330,8 +330,7 @@ class gloss_free_model(nn.Module):
                     decoder_attention_mask = tgt_input['attention_mask'].cuda(),
                     return_dict = True,
                     )
-        output = out['encoder_last_hidden_state'][:, 0, :]
-        return out['logits'], output
+        return out['logits']
     
 
     def generate(self,src_input,max_new_tokens,num_beams,decoder_start_token_id ):

@@ -377,7 +377,7 @@ def train_one_epoch(args, model: torch.nn.Module, criterion: nn.CrossEntropyLoss
 
     for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
 
-        out_logits, output = model(src_input, tgt_input)
+        out_logits = model(src_input, tgt_input)
         label = tgt_input['input_ids'].reshape(-1)
         logits = out_logits.reshape(-1,out_logits.shape[-1])
         loss = criterion(logits, label.to(device, non_blocking=True))
@@ -416,7 +416,7 @@ def evaluate(args, dev_dataloader, model, model_without_ddp, tokenizer, criterio
  
         for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(dev_dataloader, 10, header)):
 
-            out_logits, output = model(src_input, tgt_input)
+            out_logits = model(src_input, tgt_input)
             total_loss = 0.0
             label = tgt_input['input_ids'].reshape(-1)
             
